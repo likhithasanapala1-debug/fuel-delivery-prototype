@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Fuel Emergency Service</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6f9;
+text-align:center;
+margin:0;
+}
+
+header{
+background:#1f4e79;
+color:white;
+padding:18px;
+font-size:24px;
+}
+
+.container{
+margin-top:40px;
+}
+
+input,select{
+padding:10px;
+margin:8px;
+width:230px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+padding:10px 20px;
+background:#1f4e79;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-size:15px;
+}
+
+button:hover{
+background:#163a5c;
+}
+
+.cardContainer{
+display:flex;
+justify-content:center;
+gap:30px;
+margin-top:40px;
+flex-wrap:wrap;
+}
+
+.card{
+width:200px;
+padding:30px;
+background:white;
+border-radius:12px;
+box-shadow:0px 0px 12px rgba(0,0,0,0.15);
+cursor:pointer;
+font-size:18px;
+transition:0.3s;
+}
+
+.card:hover{
+transform:scale(1.05);
+}
+
+.page{
+display:none;
+}
+
+.result{
+font-weight:bold;
+color:green;
+margin-top:15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header> Fuel Delivery & Vehicle Support </header>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="container">
+<h2>User Login</h2>
+
+<input type="email" id="loginEmail" placeholder="Email">
+<br>
+
+<input type="password" id="loginPassword" placeholder="Password">
+<br>
+
+<button onclick="login()">Login</button>
+
+<p>No account? <a href="#" onclick="showSignup()">Create Account</a></p>
+</div>
+
+
+<!-- SIGNUP PAGE -->
+<div id="signupPage" class="container page">
+
+<h2>Create Account</h2>
+
+<input type="email" id="signupEmail" placeholder="Email">
+<br>
+
+<input type="password" id="signupPassword" placeholder="Password">
+<br>
+
+<button onclick="signup()">Create Account</button>
+
+<p><a href="#" onclick="showLogin()">Back to Login</a></p>
+
+</div>
+
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="page">
+
+<h2>Service Dashboard</h2>
+
+<div class="cardContainer">
+
+<div class="card" onclick="showPage('fuelPage')">
+⛽ <br> Fuel Order
+</div>
+
+<div class="card" onclick="showPage('breakdownPage')">
+🔧 <br> Vehicle Breakdown
+</div>
+
+<div class="card" onclick="showPage('emergencyPage')">
+🚑 <br> Emergency Support
+</div>
+
+<div class="card" onclick="showPage('evPage')">
+⚡ <br> EV Support
+</div>
+
+</div>
+
+<br>
+
+<button onclick="logout()">Logout</button>
+
+</div>
+
+
+<!-- FUEL ORDER -->
+<div id="fuelPage" class="page">
+
+<h2>Fuel Order</h2>
+
+<select id="fuelType">
+<option value="100">Petrol (₹100/L)</option>
+<option value="90">Diesel (₹90/L)</option>
+<option value="80">CNG (₹80/L)</option>
+</select>
+
+<br>
+
+<input type="number" id="quantity" placeholder="Quantity (Liters)">
+<br>
+
+<input type="text" id="location" placeholder="Enter Location">
+
+<br>
+
+<button onclick="openMap()">Open Map</button>
+
+<br><br>
+
+<button onclick="calculateAmount()">Calculate Amount</button>
+
+<p id="amount"></p>
+
+<button onclick="makePayment()">Pay Now</button>
+
+<p id="deliveryTime" class="result"></p>
+
+<br>
+
+<button onclick="showDashboard()">Back</button>
+
+</div>
+
+
+<!-- BREAKDOWN PAGE -->
+<div id="breakdownPage" class="page">
+
+<h2>Vehicle Breakdown</h2>
+
+<select id="vehicleType">
+<option>Bike</option>
+<option>Car</option>
+<option>Truck</option>
+</select>
+
+<br>
+
+<input type="text" id="vehicleNumber" placeholder="Vehicle Number">
+
+<br>
+
+<input type="text" id="breakLocation" placeholder="Location">
+
+<br>
+
+<button onclick="submitBreakdown()">Submit Request</button>
+
+<p id="breakMsg" class="result"></p>
+
+<br><br>
+
+<button onclick="showDashboard()">Back</button>
+
+</div>
+
+
+<!-- EMERGENCY PAGE -->
+<div id="emergencyPage" class="page">
+
+<h2>Emergency Support</h2>
+
+<h3>📞 1800-000-999</h3>
+
+<p>24/7 Emergency Service Available</p>
+
+<button onclick="showDashboard()">Back</button>
+
+</div>
+
+
+<!-- EV SUPPORT PAGE -->
+<div id="evPage" class="page">
+
+<h2>EV Support</h2>
+
+<select id="evService">
+<option>Order Battery Pack</option>
+<option>Request Movable Charger</option>
+</select>
+
+<br>
+
+<input type="text" id="evLocation" placeholder="Enter Your Location">
+
+<br>
+
+<button onclick="submitEV()">Place Order</button>
+
+<p id="evMsg" class="result"></p>
+
+<br><br>
+
+<button onclick="showDashboard()">Back</button>
+
+</div>
+
+
+<script>
+
+function showSignup(){
+loginPage.style.display="none"
+signupPage.style.display="block"
+}
+
+function showLogin(){
+signupPage.style.display="none"
+loginPage.style.display="block"
+}
+
+function signup(){
+
+let email=signupEmail.value
+let pass=signupPassword.value
+
+if(email=="" || pass==""){
+alert("Please fill all fields")
+return
+}
+
+localStorage.setItem("email",email)
+localStorage.setItem("password",pass)
+
+alert("Account Created Successfully")
+
+showLogin()
+
+}
+
+function login(){
+
+let email=loginEmail.value
+let pass=loginPassword.value
+
+let savedEmail=localStorage.getItem("email")
+let savedPass=localStorage.getItem("password")
+
+if(email===savedEmail && pass===savedPass){
+
+loginPage.style.display="none"
+dashboard.style.display="block"
+
+}
+else{
+alert("Invalid Login")
+}
+
+}
+
+function logout(){
+dashboard.style.display="none"
+loginPage.style.display="block"
+}
+
+function showPage(page){
+
+dashboard.style.display="none"
+
+fuelPage.style.display="none"
+breakdownPage.style.display="none"
+emergencyPage.style.display="none"
+evPage.style.display="none"
+
+document.getElementById(page).style.display="block"
+
+}
+
+function showDashboard(){
+
+fuelPage.style.display="none"
+breakdownPage.style.display="none"
+emergencyPage.style.display="none"
+evPage.style.display="none"
+
+dashboard.style.display="block"
+
+}
+
+function openMap(){
+window.open("https://maps.google.com")
+}
+
+function calculateAmount(){
+
+let price=document.getElementById("fuelType").value
+let qty=document.getElementById("quantity").value
+
+if(qty==""){
+alert("Enter quantity")
+return
+}
+
+let total=price*qty
+
+document.getElementById("amount").innerHTML="Total Payment: ₹"+total
+
+}
+
+function makePayment(){
+
+alert("Payment Successful")
+
+let time=Math.floor(Math.random()*20)+10
+
+deliveryTime.innerHTML="Fuel will arrive in "+time+" minutes"
+
+}
+
+function submitBreakdown(){
+
+let num=vehicleNumber.value
+let loc=breakLocation.value
+
+if(num=="" || loc==""){
+alert("Enter all details")
+return
+}
+
+breakMsg.innerHTML="Support team notified. Help is on the way."
+
+}
+
+function submitEV(){
+
+let service=document.getElementById("evService").value
+let loc=document.getElementById("evLocation").value
+
+if(loc==""){
+alert("Enter location")
+return
+}
+
+evMsg.innerHTML=service+" request placed successfully. Our EV team is on the way."
+
+}
+
+</script>
+
+</body>
+</html>
